@@ -140,7 +140,7 @@ def main():
     x_test_input = duplicate_input_layer(x_test_matrix, n_test)
 
     # vgg 16. include_top=False so the output is the 512 and use the learned weights
-    vgg16 = VGG16(include_top=False, input_shape=(48, 48, 3), weights='imagenet')
+    vgg16 = VGG16(include_top=False, input_shape=(48, 48, 3), pooling='avg', weights='imagenet')
 
     # get vgg16 outputs
     x_train_feature_map = get_vgg16_output(vgg16, x_train_matrix, n_train)
@@ -172,6 +172,9 @@ def main():
     # Merge two models and create the final_model_final_final
     inputs = Input(shape=(48, 48, 3))
     vg_output = vgg16(inputs)
+    print("vg_output: {}".format(vg_output.shape))
+    # TODO: the 'pooling' argument of the VGG16 model is important for this to work otherwise you will have to  squash
+    # output from (?, 1, 1, 512) to (?, 512)
     model_predictions = top_layer_model(vg_output)
     final_model = Model(input=inputs, output=model_predictions)
     final_model.compile(loss='categorical_crossentropy',
