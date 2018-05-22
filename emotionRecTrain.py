@@ -30,13 +30,12 @@ if (FLAGS.debug):
     FLAGS.batch_size = 10
     FLAGS.n_epochs = 1
 
-NUM_CLASSES=7
+NUM_CLASSES = 7
 IMG_SIZE = 48
 
-#TODO: Use the 'Usage' field to separate based on training/testing
+# TODO: Use the 'Usage' field to separate based on training/testing
 TRAIN_END = 28708
 TEST_START = TRAIN_END + 1
-
 
 
 def split_for_test(list):
@@ -138,11 +137,11 @@ def main():
     x_test_input = duplicate_input_layer(x_test_matrix, n_test)
 
     # vgg 16. include_top=False so the output is the 512 and use the learned weights
-    vg = VGG16(include_top=False, input_shape=(48, 48, 3), weights='imagenet')
+    vgg16 = VGG16(include_top=False, input_shape=(48, 48, 3), weights='imagenet')
 
     # get vgg16 outputs
-    x_train_feature_map = get_vgg16_output(vg, x_train_matrix, n_train)
-    x_test_feature_map = get_vgg16_output(vg, x_test_matrix, n_test)
+    x_train_feature_map = get_vgg16_output(vgg16, x_train_matrix, n_train)
+    x_test_feature_map = get_vgg16_output(vgg16, x_test_matrix, n_test)
 
     # build and train model
     top_layer_model = Sequential()
@@ -155,21 +154,21 @@ def main():
     adamax = Adamax()
 
     top_layer_model.compile(loss='categorical_crossentropy',
-                  optimizer=adamax, metrics=['accuracy'])
+                            optimizer=adamax, metrics=['accuracy'])
 
     # train
     top_layer_model.fit(x_train_feature_map, y_train,
-              validation_data=(x_train_feature_map, y_train),
-              nb_epoch=FLAGS.n_epochs, batch_size=FLAGS.batch_size)
+                        validation_data=(x_train_feature_map, y_train),
+                        nb_epoch=FLAGS.n_epochs, batch_size=FLAGS.batch_size)
     # Evaluate
     score = top_layer_model.evaluate(x_test_feature_map,
-                           y_test, batch_size=FLAGS.batch_size)
+                                     y_test, batch_size=FLAGS.batch_size)
 
     print("After top_layer_model training (test set): {}".format(score))
 
     # Merge two models and create the final_model_final_final
     inputs = Input(shape=(48, 48, 3))
-    vg_output = vg(inputs)
+    vg_output = vgg16(inputs)
     model_predictions = top_layer_model(vg_output)
     final_model = Model(input=inputs, output=model_predictions)
     final_model.compile(loss='categorical_crossentropy',
