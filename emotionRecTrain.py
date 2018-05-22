@@ -56,8 +56,12 @@ def process_emotion(emotion):
     :return: list of one-hot vectors (array of 7)
     """
     emotion_as_list = pandas_vector_to_list(emotion)
-    # convert to one hots
-    y_data_categorical = np_utils.to_categorical(emotion_as_list, NUM_CLASSES)
+    y_data = []
+    for index in range(len(emotion_as_list)):
+        y_data.append(emotion_as_list[index])
+
+    # Y data
+    y_data_categorical = np_utils.to_categorical(y_data, NUM_CLASSES)
     return y_data_categorical
 
 
@@ -119,7 +123,6 @@ def main():
     K.set_learning_phase(0)
     # get the data in a Pandas dataframe
     raw_data = pd.read_csv(FLAGS.csv_file)
-    raw_data = raw_data[0:2]
 
     # convert to one hot vectors
     emotion_array = process_emotion(raw_data[['emotion']])
