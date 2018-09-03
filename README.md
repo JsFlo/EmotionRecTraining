@@ -4,7 +4,7 @@ Python script using Keras + TensorFlow to train a custom machine learning model
 to recognize faces using a dataset with human faces and labeled with emotions.
 
 I wrote an article explaining this script and model architecture and that can be
-found here: 
+found here: https://medium.com/@jsflo.dev/training-a-tensorflow-model-to-recognize-emotions-a20c3bcd6468
 
 ## Training
 Script: emotionRecTrain.py
